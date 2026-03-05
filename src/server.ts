@@ -1,30 +1,14 @@
-import express, { type Application } from "express";
-import cors from "cors";
-import "./database/index";
-import cookieParser from "cookie-parser";
-import userRoutes from "./routes/userRoutes";
-import { corsUrl, port } from "./config";
-import todoRoutes from "./routes/todoRoutes";
-import { errorHandler } from "./middlewares/errorMiddleware";
+import { port } from "./config";
 import Logger from "./core/logger";
+import "./database/index";
+import app from "./app";
 
 const PORT = port ?? 8080;
 
-export const app: Application = express();
-
-app.use(cors({ origin: corsUrl, optionsSuccessStatus: 200 }));
-
-app.use(cookieParser());
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-app.use("/api/users", userRoutes);
-app.use("/api/todo", todoRoutes);
-
-app.use(errorHandler);
-
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-  Logger.info(`Server is running on port ${PORT}`);
-});
+app
+  .listen(PORT, () => {
+    Logger.info(`Server is running on port ${PORT}`);
+  })
+  .on("error", (e) => {
+    Logger.error("Error in starting the app " + e);
+  });
